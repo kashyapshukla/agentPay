@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "langchain-agentpay"
+version = "1.0.0"
+authors = [{name = "AgentPay Authors"}]
+description = "LangChain Tool Integration for AgentPay"
+dependencies = [
+    "langchain-core>=0.1.0",
+    "agentpay @ file://localhost/Users/kashyapshukla/Downloads/agentpay/sdks/python"
+]
