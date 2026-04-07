@@ -18,8 +18,11 @@ AgentPay allows you to assign *independent budgets* to each agent to strictly mo
 from autogen import AssistantAgent, UserProxyAgent
 from agentpay import AgentPayClient
 
-# Initialize our native Python Client
-coder_pay_client = AgentPayClient(api_key="agnt_live_sk_coder...")
+# Connect to the live AgentPay instance
+coder_pay_client = AgentPayClient(
+    api_key="agnt_live_sk_coder...",
+    base_url="https://agentpay-07bn.onrender.com"
+)
 
 def report_code_execution(tokens_used: int) -> str:
     """Logs the cost of executing generated code against the wallet."""

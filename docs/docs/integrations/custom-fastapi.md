@@ -8,7 +8,7 @@ If you are not using a sophisticated AI framework and are explicitly building a 
 
 ## The Implementation
 
-You install the native client explicitly using standard tooling: `pip install agentpay`.
+You install the native client: `pip install agentpay`. Then point it at the live hosted API.
 
 ```python
 from fastapi import FastAPI, Depends, HTTPException
@@ -17,7 +17,12 @@ from agentpay import AgentPayClient
 import openai
 
 app = FastAPI()
-client = AgentPayClient(api_key="agnt_live_sk_backend...")
+
+# Connect to the live AgentPay API
+client = AgentPayClient(
+    api_key="agnt_live_sk_backend...",
+    base_url="https://agentpay-07bn.onrender.com"
+)
 
 class PromptRequest(BaseModel):
     query: str

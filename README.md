@@ -62,21 +62,25 @@ When you build autonomous agents with LangChain, AutoGen, or CrewAI, they inevit
 
 ---
 
-## 🚀 Quick Start (3 Commands)
+## 🌍 Live API — Use It Now
+
+AgentPay is **already deployed and publicly available**. No setup required.
+
+| Resource | URL |
+|----------|-----|
+| **Live API** | [https://agentpay-07bn.onrender.com](https://agentpay-07bn.onrender.com) |
+| **Swagger Docs** | [https://agentpay-07bn.onrender.com/docs](https://agentpay-07bn.onrender.com/docs) |
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/kashyapshukla/agentPay.git
-cd agentPay
-
-# 2. Build and run all services
-docker-compose up --build -d
-
-# 3. Verify it's running
-curl http://localhost:8000/v1/gateway/status
+curl https://agentpay-07bn.onrender.com/v1/gateway/status
 ```
 
-That's it. You now have a running AgentPay instance with PostgreSQL, Redis, the API server, and the background aggregator worker.
+### Want to self-host instead?
+```bash
+git clone https://github.com/kashyapshukla/agentPay.git
+cd agentPay
+docker-compose up --build -d
+```
 
 ---
 
@@ -84,7 +88,7 @@ That's it. You now have a running AgentPay instance with PostgreSQL, Redis, the 
 
 ### Step 1: Create an Agent Identity
 ```bash
-curl -X POST http://localhost:8000/v1/auth/keys \
+curl -X POST https://agentpay-07bn.onrender.com/v1/auth/keys \
   -H "Content-Type: application/json" \
   -d '{"scopes": ["pay:send"]}'
 
@@ -95,7 +99,7 @@ curl -X POST http://localhost:8000/v1/auth/keys \
 ### Step 2: Fund the Wallet
 The **human developer** allocates a strict budget. The agent has zero ability to top-up its own wallet.
 ```bash
-curl -X POST http://localhost:8000/v1/billing/wallets/{agent_id}/topup \
+curl -X POST https://agentpay-07bn.onrender.com/v1/billing/wallets/{agent_id}/topup \
   -H "Content-Type: application/json" \
   -d '{"amount": 10.0}'
 
@@ -106,7 +110,7 @@ curl -X POST http://localhost:8000/v1/billing/wallets/{agent_id}/topup \
 ### Step 3: Agent Spends Autonomously
 When the agent calls a paid API, the service meters the usage. The wallet is atomically debited using PostgreSQL row-level locking — no double-spending, no overdrafts.
 ```bash
-curl -X POST http://localhost:8000/v1/billing/meter \
+curl -X POST https://agentpay-07bn.onrender.com/v1/billing/meter \
   -H "Content-Type: application/json" \
   -d '{"agent_id": "0a2a60c2-...", "event": "llm.completion", "units": 20}'
 
@@ -130,7 +134,10 @@ pip install ./sdks/python
 ```python
 from agentpay import AgentPayClient
 
-client = AgentPayClient(api_key="agnt_live_sk_a39f...")
+client = AgentPayClient(
+    api_key="agnt_live_sk_a39f...",
+    base_url="https://agentpay-07bn.onrender.com"
+)
 
 # Top up a wallet
 client.topup_wallet(agent_id="0a2a60c2-...", amount=5.0)
@@ -158,8 +165,11 @@ pip install ./integrations/langchain
 from langchain.agents import initialize_agent, AgentType
 from langchain_agentpay import AgentPayMeterTool
 
-# Initialize the payment tool
-pay_tool = AgentPayMeterTool(api_key="agnt_live_sk_a39f...")
+# Initialize the payment tool — pointing to the live API
+pay_tool = AgentPayMeterTool(
+    api_key="agnt_live_sk_a39f...",
+    base_url="https://agentpay-07bn.onrender.com"
+)
 
 # Attach to any LangChain agent
 tools = [pay_tool, your_search_tool, your_code_tool]
@@ -227,7 +237,7 @@ agentpay/
 | `POST` | `/v1/billing/meter` | Log a metering event and debit the wallet |
 | `GET`  | `/v1/gateway/status` | Health check |
 
-Full interactive docs available at `http://localhost:8000/docs` (Swagger UI).
+Full interactive docs available at [https://agentpay-07bn.onrender.com/docs](https://agentpay-07bn.onrender.com/docs) (Swagger UI).
 
 ---
 

@@ -16,8 +16,11 @@ CrewAI agents map perfectly to LangChain tools natively. Since we already built 
 from crewai import Agent, Task, Crew
 from langchain_agentpay import AgentPayMeterTool
 
-# 1. Initialize our Tool
-pay_tool = AgentPayMeterTool(api_key="agnt_live_sk_crew...")
+# 1. Initialize our Tool — pointing to the live API
+pay_tool = AgentPayMeterTool(
+    api_key="agnt_live_sk_crew...",
+    base_url="https://agentpay-07bn.onrender.com"
+)
 
 # 2. Assign the explicit tool to a Specific Crew Member
 scraper_agent = Agent(

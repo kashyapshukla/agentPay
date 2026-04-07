@@ -2,41 +2,60 @@
 sidebar_position: 4
 ---
 
-# Deploy Core (100% Free Tier)
+# Deployment Options
 
-Deploying AgentPay publicly shouldn't drain your startup budget. Since AgentPay is open-source, we optimized the architecture so you can host the entire cluster for **$0/month** by intelligently routing the infrastructure to the best free tiers available in the modern cloud landscape.
+## Option 1: Use the Hosted API (Recommended)
 
-## The $0 Blueprint
+AgentPay is **already deployed and publicly available**. No setup, no cost, no infrastructure needed.
 
-Instead of paying $15/mo for a monolithic DigitalOcean VPS or AWS EC2, you can split the stack natively:
+| Resource | URL |
+|----------|-----|
+| **Live API** | [https://agentpay-07bn.onrender.com](https://agentpay-07bn.onrender.com) |
+| **Swagger Docs** | [https://agentpay-07bn.onrender.com/docs](https://agentpay-07bn.onrender.com/docs) |
+| **Health Check** | [https://agentpay-07bn.onrender.com/v1/gateway/status](https://agentpay-07bn.onrender.com/v1/gateway/status) |
 
-1. **Frontend (Docusaurus)** ➔ **Vercel**
-2. **PostgreSQL Database** ➔ **Neon.tech**
-3. **Redis Stream Cache** ➔ **Upstash**
-4. **FastAPI & Worker** ➔ **Render (Free Services)**
+Simply point your SDK or cURL commands at the live URL and start building:
+```python
+from agentpay import AgentPayClient
 
-### 1. Host the Docs on Vercel
-Vercel hosts static React frontend sites completely for free.
-- Login to Vercel and import your AgentPay GitHub repository.
-- Root Directory: `docs/`
-- Build Command: `npm run build`
-- Output Directory: `build`
-Your setup documentation and homepage will be instantly live globally!
+client = AgentPayClient(
+    api_key="agnt_live_sk_...",
+    base_url="https://agentpay-07bn.onrender.com"
+)
+```
 
-### 2. Procure Free Databases
-1. Go to [Neon.tech](https://neon.tech) to provision an ultra-fast Serverless Postgres instance snippet for $0.
-2. Go to [Upstash](https://upstash.com) to provision a Serverless Redis instance for $0 natively focused on high throughput streams.
+---
 
-### 3. Deploy the Backend via Render
-Render offers free Web Services and Background Workers that automatically sleep when unused, making it perfect for OSS projects.
+## Option 2: Self-Host with Docker (Full Control)
 
-Connect your Render account to your GitHub repository and spin up two environments:
+If you need data sovereignty or want to run AgentPay on your own infrastructure:
 
-*   **Web Service (`AgentPay API`)**
-    *   Start Command: `uvicorn core.main:app --host 0.0.0.0 --port 10000`
-    *   Environment Variables: Paste the `JWT_SECRET`, the Neon `DATABASE_URL`, and Upstash `REDIS_URL`.
-*   **Background Worker (`Aggregator`)**
-    *   Start Command: `python -m core.workers.aggregator`
-    *   Environment Variables: Paste the exact same Database connection keys.
+```bash
+git clone https://github.com/kashyapshukla/agentPay.git
+cd agentPay
+docker-compose up --build -d
+```
 
-By centralizing the databases to external stateless providers, your AgentPay web-services can dynamically scale up and down safely, without running a single VM! Your architecture is now permanently online, robust, and costs **absolutely nothing**.
+This spins up PostgreSQL, Redis, the API server, and the background aggregator worker locally.
+
+---
+
+## Option 3: Self-Host on Free Cloud Tiers ($0/month)
+
+If you want your own dedicated cloud instance without paying:
+
+| Component | Provider | Cost |
+|-----------|----------|------|
+| Documentation | [Vercel](https://vercel.com) | Free |
+| PostgreSQL | [Neon.tech](https://neon.tech) | Free |
+| Redis | [Upstash](https://upstash.com) | Free |
+| API + Worker | [Render](https://render.com) | Free |
+| CI/CD | GitHub Actions | Free |
+
+### Steps:
+1. Fork the [AgentPay repo](https://github.com/kashyapshukla/agentPay)
+2. Create free accounts on Neon.tech (Postgres) and Upstash (Redis)
+3. Deploy to Render: connect your fork, set `DATABASE_URL`, `REDIS_URL`, and `JWT_SECRET` as environment variables
+4. Start command: `uvicorn core.main:app --host 0.0.0.0 --port 10000`
+
+The `render.yaml` blueprint file in the repository makes this even easier — Render can auto-detect and configure everything for you.
